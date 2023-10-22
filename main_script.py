@@ -1,6 +1,6 @@
 from docx import Document
-# в консолі вашої ide пропишіть pip install python-docx
-# вставте текст з лабораторної роботи в такому форматі (НЕ чіпайте дужки, просто вставляйте текст між ними, як у прикладі)
+# В консолі вашої ide пропишіть pip install python-docx
+# Вставте текст з лабораторної роботи в такому форматі (НЕ чіпайте дужки, просто вставляйте текст між ними, як у прикладі)
 input_string = """
 Філе куряче 80 70
 Мікс салат 70 65
@@ -18,28 +18,27 @@ input_string = """
 Олія оливкова 12 12
 """
 
-
-lines = input_string.split('\n')
-
+lines = input_string.strip().split('\n')
 
 table_data = []
 for line in lines:
     items = line.split()
-    if len(items) == 3:
+    if len(items) >= 3:
         item_name = ' '.join(items[:-2])
-        brutto = items[-2] if items[-2].isdigit() else items[-2] + " шт."
-        netto = items[-1]
-        brutto_multiplied = str(int(brutto) * 3) if brutto.isdigit() else brutto
-        netto_multiplied = int(netto) * 3
-        table_data.append([item_name, brutto, netto, brutto_multiplied, netto_multiplied])
-    elif len(items) == 4:
-        item_name = ' '.join(items[:-3])
-        count = items[-3]
         brutto = items[-2]
         netto = items[-1]
-        brutto_multiplied = int(brutto) * 3
-        netto_multiplied = int(netto) * 3
-        table_data.append([f"{item_name} {count}", brutto, netto, brutto_multiplied, netto_multiplied])
+
+        if brutto.isdigit():
+            brutto_multiplied = str(int(brutto) * 3)
+        elif brutto == "шт.":
+            brutto = f'{item_name.split()[-1]} шт.'
+            brutto_multiplied = f'{int(item_name.split()[-1])*3} шт.'
+            item_name = ' '.join(item_name.split()[:-1])
+        else:
+            brutto_multiplied = 'N/A'
+
+        netto_multiplied = str(int(netto) * 3)
+        table_data.append([item_name, brutto, netto, brutto_multiplied, netto_multiplied])
 
 doc = Document()
 table = doc.add_table(rows=1, cols=6)
