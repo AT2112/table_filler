@@ -42,21 +42,24 @@ for line in lines:
         table_data.append([f"{item_name} {count}", brutto, netto, brutto_multiplied, netto_multiplied])
 
 doc = Document()
-table = doc.add_table(rows=1, cols=5)
+table = doc.add_table(rows=1, cols=6)
 
 table_header = table.rows[0].cells
 table_header[0].text = 'Назва'
-table_header[1].text = 'Брутто'
-table_header[2].text = 'Нетто'
-table_header[3].text = 'Брутто * 3'
-table_header[4].text = 'Нетто * 3'
+table_header[1].text = 'Одиниця виміру'
+table_header[2].text = 'Брутто'
+table_header[3].text = 'Нетто'
+table_header[4].text = 'Брутто * 3'
+table_header[5].text = 'Нетто * 3'
 
 for row_data in table_data:
     row_cells = table.add_row().cells
     row_cells[0].text = row_data[0]
-    row_cells[1].text = row_data[1]
-    row_cells[2].text = row_data[2]
-    row_cells[3].text = str(row_data[3])
-    row_cells[4].text = str(row_data[4])
+    row_cells[1].text = 'г'
+    row_cells[2].text = row_data[1]
+    row_cells[3].text = row_data[2]
+    row_cells[4].text = str(row_data[3])
+    row_cells[5].text = str(row_data[4])
+
 
 doc.save("output.docx")
