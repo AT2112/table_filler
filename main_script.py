@@ -1,44 +1,64 @@
 from docx import Document
+import re
 # В консолі вашої ide пропишіть pip install python-docx
 # Вставте текст з лабораторної роботи в такому форматі (НЕ чіпайте дужки, просто вставляйте текст між ними, як у прикладі)
 input_string = """
-Філе куряче 80 70
-Мікс салат 70 65
-Помідори черрі 35 30
-Сир Пармезан 30 30
-Бекон 43 40
-Батон 35 30
-Часник сушений 2 2
-Яйця перепелині 2 шт. 35
-Для соусу
-Майонез 12 12
-Лимонний сік 4 4
-Часник 3 2
-Сир «Пармезан» 22 20
-Олія оливкова 12 12
+Куряча грудинка 65 55
+Для соусу:
+Часник 65 60
+Базилік 50 45
+Кедрові горіхи
+(соняшникове насіння)
+40 40
+Пармезан 100 100
+Олія оливкова 40 40
+Маса соусу - 245
+Чіабатта 200 200
 """
+
+def is_float(value):
+    try:
+        float_number = float(value.replace(",", "."))
+        float(float_number)
+        return True
+    except ValueError:
+        return False
 
 lines = input_string.strip().split('\n')
 
+input_string = input_string.replace('\n', ' ')
+
+pattern = r'(.+?)\s+([\d.,]+)\s+([\d.,]+)'
+items = re.findall(pattern, input_string)
+
+
+print(input_string)
+
 table_data = []
-for line in lines:
-    items = line.split()
-    if len(items) >= 3:
-        item_name = ' '.join(items[:-2])
-        brutto = items[-2]
-        netto = items[-1]
+for item in items:
+    item_name = item[0]
+    brutto = item[1]
+    netto = item[2]
+    if brutto.isdigit():
+        brutto_multiplied = str(int(brutto) * 3)
 
-        if brutto.isdigit():
-            brutto_multiplied = str(int(brutto) * 3)
-        elif brutto == "шт.":
-            brutto = f'{item_name.split()[-1]} шт.'
-            brutto_multiplied = f'{int(item_name.split()[-1])*3} шт.'
-            item_name = ' '.join(item_name.split()[:-1])
-        else:
-            brutto_multiplied = 'N/A'
+    elif is_float(brutto):
+        brutto = brutto.replace(",", ".")
+        brutto_multiplied = str(round(float(brutto) * 3, 1))
 
+    if brutto == "шт.":
+        brutto = f'{item_name.split()[-1]} шт.'
+        brutto_multiplied = f'{int(item_name.split()[-1])*3} шт.'
+        item_name = ' '.join(item_name.split()[:-1])
+
+    if netto.isdigit():
         netto_multiplied = str(int(netto) * 3)
-        table_data.append([item_name, brutto, netto, brutto_multiplied, netto_multiplied])
+
+    elif is_float(netto):
+        netto = netto.replace(",", ".")
+        netto_multiplied = str(round(float(netto) * 3, 1))
+
+    table_data.append([item_name, brutto, netto, brutto_multiplied, netto_multiplied])
 
 doc = Document()
 table = doc.add_table(rows=1, cols=6)
